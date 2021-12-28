@@ -10,31 +10,33 @@ import (
 
 // creating an object for the gym customers
 type Person struct {
-	LastName  string    `sql:",lastname,type:varchar(21),notnull"`
-	FirstName string    `sql:",firstname,type:varchar(21),notnull"`
-	Gender    string    `sql:",gender,notnull"`
-	Age       int       `sql:",age,notnull"`
-	Phone     uint      `sql:",phone,type:int(10),Unique,notnull"`
-	Email     string    `sql:",email,type:varchar(35),Unique,notnull"`
-	UpdatedAt time.Time `sql:",updated_at,notnull,default time.Now()"`
+	LastName  string    `sql:",lastname,type:varchar(21),notnull" validate:"required,max=21,alpha"`
+	FirstName string    `sql:",firstname,type:varchar(21),notnull" validate:"required,alpha,max=21"`
+	Gender    string    `sql:",gender,notnull" validate:"required,alpha,max=1"`
+	Age       int       `sql:",age,notnull" validate:"gte=15,required"`
+	Phone     uint      `sql:",phone,type:int(10),unique,notnull" validate:"required,min=10,numeric"`
+	Email     string    `sql:",email,type:varchar(35),unique,notnull" validate:"required,max=35,email"`
+	UpdatedAt time.Time `sql:",updated_at,notnull" validate:"omitempty"`
 }
 
+// creating an object for the gym Members
 type GymMember struct {
 	Person
-	MemberID           uuid.UUID `sql:",member_id,Unique,primary_key,type:uuid,default uuid.New(),fk:instructor_id"`
-	InstructorID       uuid.UUID `sql:",instructor_id,primary_key"`
-	JoinDate           time.Time `sql:",join_date,notnull,default time.Now()"`
-	LastSeen           time.Time `sql:",lastseen,"`
-	MembershipValidity string    `sql:",membership_validity,"`
+	MemberID           uuid.UUID `sql:",member_id,unique,primary_key,type:uuid,fk:instructor_id" validate:"required"`
+	InstructorID       uuid.UUID `sql:",instructor_id,primary_key" validate:"required"`
+	JoinDate           time.Time `sql:",join_date,notnull" validate:"required"`
+	LastSeen           time.Time `sql:",lastseen," validate:"required"`
+	MembershipValidity string    `sql:",membership_validity," validate:"required"`
 }
 
 // creating an object for the gym instructors
 type GymInstructor struct {
 	Person
-	InstructorID uuid.UUID `sql:",instructor_id, unique, pk, type:uuid, default uuid.New()"`
-	EmpDate      time.Time `sql:",emp_date, default time.Now(), notnull"`
+	InstructorID uuid.UUID `sql:",instructor_id, unique, pk, type:uuid" validate:"omitempty"`
+	EmpDate      time.Time `sql:",emp_date, notnull" validate:"omitempty"`
 }
 
+// Create new member
 func (member *GymMember) SaveNewMember(database *postgres.DB) error {
 	member.UpdatedAt = time.Now()
 	member.MemberID = uuid.New()
@@ -52,6 +54,7 @@ func (member *GymMember) SaveNewMember(database *postgres.DB) error {
 	return insertError
 }
 
+// creating new instructor
 func (instructor *GymInstructor) SaveNewInstructor(database *postgres.DB) error {
 	instructor.UpdatedAt = time.Now()
 	instructor.EmpDate = time.Now()
@@ -61,14 +64,13 @@ func (instructor *GymInstructor) SaveNewInstructor(database *postgres.DB) error 
 	if insertError != nil {
 		fmt.Printf("Error while inserting new record to database %v\n", insertError)
 		return insertError
-	} else {
-
-		fmt.Println("New Instructor inserted sucessfully")
-
 	}
-	return nil
+	fmt.Println("New Instructor inserted sucessfully")
+
+	return insertError
 }
 
+// fecthing all instructors from database
 func FetchAllInstructor(database *postgres.DB) ([]GymInstructor, error) {
 	var instructors []GymInstructor
 	getError := database.Model(&instructors).Select()
@@ -79,11 +81,13 @@ func FetchAllInstructor(database *postgres.DB) ([]GymInstructor, error) {
 	return instructors, getError
 }
 
-// func (member *GymMember) GetAllMembers(database *postgres.DB) error {
-// 	getError := database.Select(member)
-// 	if getError == nil {
-// 		fmt.Printf("Error while Fecthing data from databse \n")
-// 	}
-
-// 	return getError
-// }
+// fetching all gym members from database
+func (member *GymMember) GetAllMembers(database *postgres.DB) ([]GymMember, error) {
+	var members []GymMember
+	getError := database.Model(&members).Select()
+	if getError != nil {
+		fmt.Println("Error while Fecthing data from databse")
+	}
+	fmt.Print(members)
+	return members, getError
+}

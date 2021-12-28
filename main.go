@@ -12,7 +12,7 @@ import (
 	// "gorm.io.gorm"
 
 	"evince-gym-api/database"
-	"evince-gym-api/middleWare"
+	"evince-gym-api/middleware"
 	"evince-gym-api/routes"
 )
 
@@ -35,7 +35,7 @@ func main() {
 	instructorParser := Server.Group("instructor")
 	{
 
-		instructorParser.POST("create", middleWare.HandleCreateInstructor(), routes.CreateNewInstructor)
+		instructorParser.POST("create", middleware.HandleCreateInstructor(), routes.CreateNewInstructor)
 		instructorParser.GET("get", routes.GetAllInstructor)
 		instructorParser.GET("get/:InstructorID", routes.GetInstructorByID)
 		instructorParser.PUT("update", routes.UpdateInstructor)
