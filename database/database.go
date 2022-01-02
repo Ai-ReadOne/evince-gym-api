@@ -19,6 +19,7 @@ func Connect() *postgres.DB {
 		fmt.Println("unable to connect to database")
 	} else {
 		fmt.Println("database connected succesfully")
+		fmt.Println(database)
 	}
 	CreateInstructorTable(database)
 	CreateMemberTable(database)
@@ -34,7 +35,7 @@ func CreateMemberTable(database *postgres.DB) error {
 
 	createError := database.CreateTable(&GymMember{}, options)
 	if createError != nil {
-		fmt.Printf("Error occured while creating Table %v\n", createError)
+		fmt.Printf("Error 1 occured while creating Table %v\n", createError.Error())
 		return createError
 	} else {
 		fmt.Println(" Gym membersTable created Succesfully")
@@ -49,7 +50,7 @@ func CreateInstructorTable(database *postgres.DB) error {
 
 	createError := database.CreateTable(&GymInstructor{}, options)
 	if createError != nil {
-		fmt.Printf("Error occured while creating Table %v\n", createError)
+		fmt.Printf("Error 2 occured while creating Table %v\n", createError)
 		return createError
 	} else {
 		fmt.Println("Gym instructors Table created Succesfully")
