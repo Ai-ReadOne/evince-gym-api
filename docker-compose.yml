@@ -1,0 +1,25 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:14.1-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=aireadone
+      - POSTGRES_DB=postgres
+
+  evince-gym-api:
+    build: .
+    ports:
+      # - ${PORT}:${PORT}
+      - "8000:8000"
+    # environment:
+    #   - PORT=8000
+    depends_on:
+     - postgres
+    container_name: evince-gym-api
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=aireadone
+      - POSTGRES_DB=postgres

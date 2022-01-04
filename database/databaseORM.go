@@ -14,7 +14,7 @@ type Person struct {
 	FirstName string    `sql:",firstname,type:varchar(21),notnull" validate:"required,alpha,max=21"`
 	Gender    string    `sql:",gender,notnull" validate:"required,alpha,max=1"`
 	Age       int       `sql:",age,notnull" validate:"gte=15,required"`
-	Phone     string    `sql:",phone,unique,notnull" validate:"required,numeric,len=10"`
+	Phone     int       `sql:",phone,unique,notnull" validate:"required,numeric,len=10"`
 	Email     string    `sql:",email,type:varchar(35),unique,notnull" validate:"required,max=35,email"`
 	UpdatedAt time.Time `sql:",updated_at,notnull" validate:"omitempty"`
 }
@@ -23,7 +23,7 @@ type Person struct {
 type GymMember struct {
 	Person
 	MemberID           uuid.UUID        `sql:",member_id,pk,unique,type:uuid,notnull" validate:"omitempty"`
-	InstructorID       []*GymInstructor `sql:",instructor,type:uuid,fk:instructor_id,notnull" validate:"required"`
+	InstructorID       []*GymInstructor `sql:",instructors,type:uuid,fk:instructors_instructor_id,notnull" validate:"required"`
 	JoinDate           time.Time        `sql:",join_date,notnull" validate:"required"`
 	LastSeen           time.Time        `sql:",lastseen,notnull" validate:"required"`
 	MembershipValidity string           `sql:",membership_validity,notnull" validate:"required"`

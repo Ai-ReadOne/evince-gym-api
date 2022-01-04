@@ -81,29 +81,35 @@ func UpdateInstructor(wr *gin.Context) {
 
 func CreateNewMember(wr *gin.Context) {
 	Member := database.GymMember{}
-	error := wr.ShouldBindJSON(&Member)
-	if error != nil {
+	if error := wr.ShouldBindBodyWith(&Member, binding.JSON); error != nil {
 		wr.JSON(http.StatusBadRequest, gin.H{
 			"Error1": error.Error(),
 		})
 		return
 	}
 
+	validate := validator.New()
+	if error := validate.Struct(Member); error != nil {
+		wr.JSON(http.StatusBadRequest, gin.H{
+			"error12": error.Error(),
+		})
+		return
+	}
+
 	databaseConnect, _ := wr.Get("database")
 	connect := databaseConnect.(*postgres.DB)
-
-	error = Member.SaveNewMember(connect)
-	if error != nil {
+	if error := Member.SaveNewMember(connect); error != nil {
 		wr.JSON(http.StatusBadRequest, gin.H{
-			"error2": error.Error(),
+			"Error123": error.Error(),
 		})
-	} else {
-		wr.JSON(http.StatusOK, gin.H{
-			"message":       "new Instructor Created sucessfully",
-			"instructor_id": Member.InstructorID,
-			"member_id":     Member.MemberID,
-			"LastName":      Member.LastName,
-			"FirstName":     Member.FirstName,
-		})
+		return
 	}
+	wr.JSON(http.StatusOK, gin.H{
+		"message":       "new Instructor Created sucessfully",
+		"instructor_id": Member.InstructorID,
+		"member_id":     Member.MemberID,
+		"LastName":      Member.LastName,
+		"FirstName":     Member.FirstName,
+	})
+
 }
