@@ -1,6 +1,6 @@
 # Author : Ai ReadOne
 # Name: Evince-gym-api
-# Description: This mini project is meant to test my proficiency in Golang and REST API.
+# Description: This mini project is meant for self development in Golang and REST API.
 
 1. This API is built for a sudo gym management application
 
